@@ -1,301 +1,366 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>БулочкаLand</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500&display=swap">
 
 <style>
-/* Layout: centred hero — палитра точно как в лаунчере */
+/*
+  Layout: full-bleed dark hero, particle field, launcher palette verbatim
+  --bg #09090b · --green #52e62c · --white #f4f4ef · --muted #b9bdb6
+*/
 :root {
-  --bg: #09090b;
-  --surface: rgba(255,255,255,.045);
-  --border: rgba(255,255,255,.10);
-  --border-green: rgba(86,230,44,.4);
-  --fg: #f4f4ef;
-  --muted: #b9bdb6;
-  --muted-dim: #767a73;
-  --accent: #52e62c;
-  --accent-soft: #8bf55c;
-  --accent-glow: rgba(82,230,44,0.30);
-  --display: 'Rajdhani', sans-serif;
-  --body: 'Inter', sans-serif;
+  --bg:           #09090b;
+  --panel:        rgba(255,255,255,.045);
+  --line:         rgba(255,255,255,.10);
+  --line-g:       rgba(86,230,44,.35);
+  --green:        #52e62c;
+  --green-soft:   #8bf55c;
+  --green-glow:   rgba(82,230,44,.28);
+  --green-deep:   #0f5c1a;
+  --white:        #f4f4ef;
+  --mist:         #b9bdb6;
+  --mist-dim:     #767a73;
+  --display:      'Rajdhani', sans-serif;
+  --body:         'Inter', sans-serif;
   color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; }
 
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--body);
-  font-size: 16px;
-  line-height: 1.6;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 0;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 
-.page { max-width: 860px; margin: 0 auto; }
+html, body { height: 100%; }
 
-/* NAV */
+body {
+  background: var(--bg);
+  color: var(--white);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-left:  max(16px, env(safe-area-inset-left,  0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  overflow-x: hidden;
+}
+
+/* ── CANVAS PARTICLES ─────────────────────────────── */
+#canvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .55;
+}
+
+/* ── WRAPPER ──────────────────────────────────────── */
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ── NAV ──────────────────────────────────────────── */
 nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-block: 20px;
-  border-bottom: 1px solid var(--border);
+  padding-block: 28px;
+  border-bottom: 1px solid var(--line);
 }
 .logo {
   font-family: var(--display);
-  font-size: 1.1rem;
-  font-weight: 900;
-  color: var(--accent);
-  letter-spacing: -0.02em;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+  color: var(--green);
+  text-transform: uppercase;
 }
-.logo span { color: var(--fg); }
-.nav-tag {
-  font-size: 0.75rem;
-  color: var(--muted);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 4px 10px;
-  border-radius: 20px;
+.logo b { color: var(--white); font-weight: 700; }
+.badge {
+  font-size: .72rem;
   font-weight: 500;
+  color: var(--mist);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
-/* HERO */
+/* ── HERO ─────────────────────────────────────────── */
 .hero {
   text-align: center;
-  padding-block: 72px 56px;
+  padding-block: 100px 80px;
 }
+
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 0.78rem;
+  gap: 10px;
+  font-size: .72rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 24px;
+  color: var(--green);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fade-up .6s .1s ease forwards;
 }
 .eyebrow::before, .eyebrow::after {
   content: '';
-  display: block;
-  width: 28px;
-  height: 1px;
-  background: var(--accent);
-  opacity: 0.5;
+  width: 32px; height: 1px;
+  background: var(--green);
+  opacity: .5;
 }
+
 h1 {
   font-family: var(--display);
-  font-size: clamp(2.2rem, 6vw, 3.8rem);
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
+  font-size: clamp(2.8rem, 8vw, 5.2rem);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: .02em;
+  text-transform: uppercase;
   text-wrap: balance;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fade-up .7s .2s ease forwards;
 }
 h1 em {
   font-style: normal;
-  color: var(--accent);
-}
-.subtitle {
-  font-size: 1.05rem;
-  color: var(--muted);
-  max-width: 480px;
-  margin: 0 auto 40px;
-  line-height: 1.7;
+  color: var(--green);
+  text-shadow: 0 0 40px var(--green-glow);
 }
 
-/* DOWNLOAD BUTTON */
-.dl-wrap {
+.sub {
+  font-size: 1.1rem;
+  color: var(--mist);
+  max-width: 460px;
+  margin: 0 auto 52px;
+  line-height: 1.75;
+  opacity: 0;
+  animation: fade-up .7s .32s ease forwards;
+}
+
+/* ── DOWNLOAD ─────────────────────────────────────── */
+.dl-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  opacity: 0;
+  animation: fade-up .7s .44s ease forwards;
 }
-.btn-dl {
+
+.btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  background: var(--accent);
-  color: #09090b;
-  font-family: var(--display);
-  font-size: 0.9rem;
-  font-weight: 700;
-  padding: 15px 32px;
-  border-radius: 8px;
-  text-decoration: none;
-  letter-spacing: 0.01em;
-  transition: filter 0.15s, transform 0.15s;
-  box-shadow: 0 0 32px var(--accent-glow);
-}
-.btn-dl:hover { filter: brightness(1.12); transform: translateY(-1px); }
-.btn-dl:active { transform: translateY(0); filter: brightness(0.95); }
-.btn-dl svg { flex-shrink: 0; }
-.dl-note {
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-.dl-note a { color: var(--accent); text-decoration: none; }
-.dl-note a:hover { text-decoration: underline; }
-
-/* SEPARATOR */
-.sep {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin-block: 0;
-}
-
-/* FEATURES */
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  margin-block: 56px;
-}
-.feature {
-  background: var(--surface);
-  padding: 28px 24px;
-}
-.feature-icon {
-  font-size: 1.5rem;
-  margin-bottom: 12px;
-}
-.feature h3 {
-  font-family: var(--display);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  margin-bottom: 6px;
-}
-.feature p {
-  font-size: 0.88rem;
-  color: var(--muted);
-  line-height: 1.55;
-}
-
-/* HOW TO INSTALL */
-.install {
-  padding-block: 16px 64px;
-}
-.install h2 {
+  gap: 11px;
+  background: var(--green);
+  color: #07110a;
   font-family: var(--display);
   font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  margin-bottom: 24px;
-  color: var(--muted);
+  letter-spacing: .06em;
   text-transform: uppercase;
+  padding: 17px 38px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: filter .15s, transform .15s, box-shadow .15s;
+  box-shadow: 0 0 0 var(--green-glow);
 }
+.btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 0 48px var(--green-glow);
+}
+.btn:active { transform: translateY(0); filter: brightness(.95); }
+.btn svg { flex-shrink: 0; }
+
+.dl-note {
+  font-size: .8rem;
+  color: var(--mist-dim);
+}
+.dl-note a { color: var(--green); text-decoration: none; }
+.dl-note a:hover { text-decoration: underline; }
+
+/* ── SEPARATOR ────────────────────────────────────── */
+.sep { border: none; border-top: 1px solid var(--line); margin-block: 0; }
+
+/* ── FEATURES ─────────────────────────────────────── */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-block: 72px;
+}
+.feat {
+  background: var(--bg);
+  padding: 32px 26px;
+  transition: background .2s;
+}
+.feat:hover { background: var(--panel); }
+.feat-icon {
+  width: 36px; height: 36px;
+  border: 1px solid var(--line-g);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+  background: rgba(82,230,44,.06);
+}
+.feat h3 {
+  font-family: var(--display);
+  font-size: .85rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.feat p {
+  font-size: .88rem;
+  color: var(--mist);
+  line-height: 1.6;
+}
+
+/* ── INSTALL ──────────────────────────────────────── */
+.install { padding-block: 8px 80px; }
+.section-label {
+  font-family: var(--display);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mist-dim);
+  margin-bottom: 28px;
+}
+
 .steps {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
   overflow: hidden;
 }
 .step {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  background: var(--surface);
-  padding: 20px 22px;
-  border-bottom: 1px solid var(--border);
+  gap: 20px;
+  background: var(--panel);
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--line);
+  transition: background .2s;
 }
 .step:last-child { border-bottom: none; }
-.step-num {
+.step:hover { background: rgba(255,255,255,.07); }
+
+.step-n {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 30px; height: 30px;
   border-radius: 50%;
-  background: var(--accent-glow);
-  border: 1px solid var(--accent);
-  color: var(--accent);
+  border: 1px solid var(--line-g);
+  background: rgba(82,230,44,.08);
+  color: var(--green);
   font-family: var(--display);
-  font-size: 0.7rem;
+  font-size: .75rem;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
 }
-.step-text strong {
+.step-txt strong {
   display: block;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  font-family: var(--display);
+  letter-spacing: .02em;
 }
-.step-text span {
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-.step-text .warn {
-  color: var(--accent);
-  font-size: 0.82rem;
-  margin-top: 4px;
+.step-txt span { font-size: .88rem; color: var(--mist); }
+.step-txt .warn {
   display: block;
+  font-size: .82rem;
+  color: var(--green-soft);
+  margin-top: 6px;
+  opacity: .85;
 }
 
-/* STATUS */
-.status-bar {
+/* ── STATUS ───────────────────────────────────────── */
+.status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.82rem;
-  color: var(--muted);
-  padding-block: 24px;
-  border-top: 1px solid var(--border);
-  margin-top: 0;
+  gap: 10px;
+  font-size: .82rem;
+  color: var(--mist-dim);
+  padding-block: 28px;
+  border-top: 1px solid var(--line);
 }
 .dot {
-  width: 7px;
-  height: 7px;
+  width: 7px; height: 7px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 6px var(--accent-glow);
-  flex-shrink: 0;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
+  50%       { opacity: .5; box-shadow: 0 0 3px var(--green); }
 }
 
-/* FOOTER */
+/* ── FOOTER ───────────────────────────────────────── */
 footer {
   padding-block: 24px;
-  border-top: 1px solid var(--border);
-  font-size: 0.8rem;
-  color: var(--muted);
+  border-top: 1px solid var(--line);
+  font-size: .8rem;
+  color: var(--mist-dim);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
 }
-footer a { color: var(--muted); text-decoration: none; }
-footer a:hover { color: var(--fg); }
+footer a { color: var(--mist-dim); text-decoration: none; }
+footer a:hover { color: var(--mist); }
 
-@media (max-width: 500px) {
-  .hero { padding-block: 48px 40px; }
-  h1 { font-size: 2rem; }
+/* ── ANIMATIONS ───────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── MOBILE ───────────────────────────────────────── */
+@media (max-width: 540px) {
+  .hero { padding-block: 64px 52px; }
+  h1 { font-size: 2.6rem; }
+  .features { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 380px) {
+  .features { grid-template-columns: 1fr; }
 }
 </style>
 
-<div class="page">
+<canvas id="canvas"></canvas>
+
+<div class="wrap">
   <nav>
-    <div class="logo">Булочка<span>Land</span></div>
-    <span class="nav-tag">Minecraft сервер</span>
+    <div class="logo">Булочка<b>Land</b></div>
+    <span class="badge">Minecraft сервер</span>
   </nav>
 
   <section class="hero">
     <div class="eyebrow">Официальный лаунчер</div>
     <h1>Играй на <em>БулочкаLand</em><br>одним кликом</h1>
-    <p class="subtitle">Лаунчер сам скачает все моды, текстурпаки и Minecraft. Просто нажми играть.</p>
+    <p class="sub">Лаунчер сам скачает Minecraft, все моды и текстурпаки. Просто нажми играть — больше ничего делать не нужно.</p>
 
-    <div class="dl-wrap">
-      <a class="btn-dl" href="https://github.com/bull04kaaa/bulochkaland-launcher/releases/latest/download/bulochka-launcher-setup-1.0.9.exe">
+    <div class="dl-area">
+      <a class="btn" href="https://github.com/bull04kaaa/bulochkaland-launcher/releases/latest/download/bulochka-launcher-setup-1.0.9.exe">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
@@ -310,57 +375,57 @@ footer a:hover { color: var(--fg); }
   <hr class="sep">
 
   <div class="features">
-    <div class="feature">
-      <div class="feature-icon">⚡</div>
+    <div class="feat">
+      <div class="feat-icon">⚡</div>
       <h3>Авто-обновление</h3>
-      <p>Лаунчер сам обновляется при запуске. Никаких ручных действий.</p>
+      <p>При запуске лаунчер сам проверяет и ставит новую версию — без твоего участия.</p>
     </div>
-    <div class="feature">
-      <div class="feature-icon">🧩</div>
+    <div class="feat">
+      <div class="feat-icon">🧩</div>
       <h3>Все моды включены</h3>
-      <p>Fabric, оптимизация и моды сервера устанавливаются автоматически.</p>
+      <p>Fabric, оптимизация и серверные моды устанавливаются автоматически при первом запуске.</p>
     </div>
-    <div class="feature">
-      <div class="feature-icon">☕</div>
+    <div class="feat">
+      <div class="feat-icon">☕</div>
       <h3>Java не нужна</h3>
-      <p>Лаунчер сам скачает нужную версию Java, если её нет на компьютере.</p>
+      <p>Нужная версия Java скачивается сама, если её ещё нет на компьютере.</p>
     </div>
-    <div class="feature">
-      <div class="feature-icon">🎮</div>
+    <div class="feat">
+      <div class="feat-icon">🎮</div>
       <h3>Discord статус</h3>
-      <p>Автоматически показывает что ты играешь на БулочкаLand в Discord.</p>
+      <p>Лаунчер автоматически показывает в Discord, что ты играешь на БулочкаLand.</p>
     </div>
   </div>
 
   <section class="install">
-    <h2>Как установить</h2>
+    <div class="section-label">Как установить</div>
     <div class="steps">
       <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-text">
+        <div class="step-n">1</div>
+        <div class="step-txt">
           <strong>Скачай установщик</strong>
-          <span>Нажми кнопку "Скачать лаунчер" выше</span>
+          <span>Нажми кнопку «Скачать лаунчер» выше</span>
         </div>
       </div>
       <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-text">
-          <strong>Запусти файл .exe</strong>
-          <span>Если Windows напишет "Неизвестный издатель" — нажми "Подробнее" → "Выполнить всё равно"</span>
-          <span class="warn">⚠ Это нормально — лаунчер бесплатный и без подписи, но безопасный</span>
+        <div class="step-n">2</div>
+        <div class="step-txt">
+          <strong>Запусти .exe файл</strong>
+          <span>Если Windows напишет «Неизвестный издатель» — нажми «Подробнее» → «Выполнить всё равно»</span>
+          <span class="warn">⚠ Это нормально — лаунчер бесплатный, без подписи, но безопасный</span>
         </div>
       </div>
       <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-text">
+        <div class="step-n">3</div>
+        <div class="step-txt">
           <strong>Нажми Играть</strong>
-          <span>Введи свой ник и нажми "Играть" — лаунчер всё сделает сам</span>
+          <span>Введи ник и нажми «Играть» — лаунчер всё сделает сам</span>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="status-bar">
+  <div class="status">
     <div class="dot"></div>
     <span>bullo4kaland.joinserver.ru · сервер онлайн</span>
   </div>
@@ -370,5 +435,83 @@ footer a:hover { color: var(--fg); }
     <a href="https://github.com/bull04kaaa/bulochkaland-launcher" target="_blank">GitHub</a>
   </footer>
 </div>
+
+<script>
+/* ── PARTICLES ──────────────────────────────────────── */
+(function () {
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const GREEN = '82,230,44';
+  let W, H, pts = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function spawn() {
+    return {
+      x: rand(0, W),
+      y: rand(H * .1, H),
+      r: rand(.8, 2.2),
+      vy: rand(.18, .55),
+      vx: rand(-.12, .12),
+      o: rand(.15, .55),
+      po: rand(.15, .55),
+      life: rand(.4, 1),
+    };
+  }
+
+  function init() {
+    pts = [];
+    const n = Math.floor(W * H / 14000);
+    for (let i = 0; i < n; i++) pts.push(spawn());
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = pts.length - 1; i >= 0; i--) {
+      const p = pts[i];
+      p.y -= p.vy;
+      p.x += p.vx;
+      p.life -= .0008;
+      if (p.life <= 0 || p.y < -10) { pts[i] = spawn(); continue; }
+      const alpha = p.o * p.life;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${GREEN},${alpha.toFixed(3)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); init(); });
+  resize(); init(); draw();
+})();
+
+/* ── SCROLL REVEAL ──────────────────────────────────── */
+(function () {
+  const targets = document.querySelectorAll('.feat, .step');
+  targets.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .55s ease, transform .55s ease';
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, idx) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }, 60 * (Array.from(targets).indexOf(e.target) % 4));
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: .15 });
+  targets.forEach(el => io.observe(el));
+})();
+</script>
 
 </body></html>
